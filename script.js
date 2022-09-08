@@ -20,31 +20,28 @@ const renderCountry = function(data){
         countriesContainer.insertAdjacentHTML('beforeend', html); 
 }
 
-const getCountryAndNbrs = function(country){
-    //ajax call country1
-    const req = new XMLHttpRequest(); 
-    req.open('GET', `https://restcountries.com/v3.1/name/${country}`); 
-    req.send(); 
 
-    req.addEventListener('load', function(){
-        const [data] = JSON.parse(this.responseText) 
-        console.log(data)
-        renderCountry(data);
 
-        //fetch country2
-        const [nbr] = data.borders; 
+const getCountryData = function(country){
+    //country1
+    fetch(`https://restcountries.com/v3.1/name/${country}`)
+    .then(function(response){ // return json promise
+        return response.json(); 
+    })
+    .then(function(data){  // return promise of nbr's fetch req
+        renderCountry(data[0])
+        const nbr = data[0].borders[0]
         if(!nbr) return; 
-
-        //ajax call country2
-        const req2 = new XMLHttpRequest(); 
-        req2.open('GET', `https://restcountries.com/v3.1/alpha/${nbr}`); 
-        req2.send();
-        req2.addEventListener('load', function(){
-            const [data2] = JSON.parse(this.responseText)
-            console.log(data2)
-            renderCountry(data2);
-        })
+        //country2
+        return fetch(`https://restcountries.com/v3.1/name/${nbr}`)
+    })
+    .then(function(res){ // return json promise of nbr1
+        return res.json()
+    })
+    .then(function(data){
+        renderCountry(data[0])
     })
 }
 
-getCountryAndNbrs("portugal")
+
+getCountryData('portugal'); 
