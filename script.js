@@ -27,14 +27,15 @@ const getCountryData = function(country){
     fetch(`https://restcountries.com/v3.1/name/${country}`)
     .then(function(response){ // return json promise
         return response.json(); 
-    })
+ 
+    }, (err) => { console.log(err) })
     .then(function(data){  // return promise of nbr's fetch req
         renderCountry(data[0])
         const nbr = data[0].borders[0]
         if(!nbr) return; 
         //country2
         return fetch(`https://restcountries.com/v3.1/name/${nbr}`)
-    })
+    })  
     .then(function(res){ // return json promise of nbr1
         return res.json()
     })
@@ -43,5 +44,7 @@ const getCountryData = function(country){
     })
 }
 
+btn.addEventListener('click', function(){
+    getCountryData('portugal'); 
+})
 
-getCountryData('portugal'); 
