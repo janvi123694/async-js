@@ -21,27 +21,35 @@ const renderCountry = function(data){
 }
 
 
+const renderError = function(msg){
+    countriesContainer.insertAdjacentHTML('beforeend', msg)
+}
+
+const getJSON = function(url , errorMsg = `error`){
+    return fetch(url)
+    .then(function(response){ // return json promise
+        if(!response.ok) throw new Error(`${errorMsg} ${response.status}`)
+        return response.json(); // returns json promise
+    }) // 2 cbs
+}
 
 const getCountryData = function(country){
     //country1
-    fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then(function(response){ // return json promise
-        return response.json(); 
- 
-    }, (err) => { console.log(err) })
+     getJSON(`https://restcountries.com/v3.1/name/${country}`)
     .then(function(data){  // return promise of nbr's fetch req
+
         renderCountry(data[0])
+
         const nbr = data[0].borders[0]
         if(!nbr) return; 
         //country2
-        return fetch(`https://restcountries.com/v3.1/name/${nbr}`)
+        return getJSON(`https://restcountries.com/v3.1/name/${nbr}` , 'country not found') // json promise
     })  
-    .then(function(res){ // return json promise of nbr1
-        return res.json()
-    })
     .then(function(data){
         renderCountry(data[0])
     })
+    .catch((err) => renderError(`${err.message}`))
+    .finally( () => console.log('finally cb'))
 }
 
 btn.addEventListener('click', function(){
